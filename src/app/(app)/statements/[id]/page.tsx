@@ -1,3 +1,4 @@
+import { StatementDeleteButton } from "@/components/statements/StatementDeleteButton";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { TransactionsTable } from "@/components/transactions/TransactionsTable";
 import { computeCategoryBreakdown, computeStatementMetrics } from "@/lib/reporting/metrics";
@@ -35,14 +36,24 @@ export default async function StatementDetailPage({
   return (
     <main className="space-y-6">
       <section className="rounded-2xl border bg-white p-4">
-        <h1 className="text-xl font-semibold text-zinc-900">
-          {statement
-            ? `${statement.statement_month}/${statement.statement_year} - ${statement.file_name}`
-            : "Statement"}
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600">
-          Status: {statement?.processing_status ?? "Not found"}
-        </p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-semibold text-zinc-900">
+              {statement
+                ? `${statement.statement_month}/${statement.statement_year} - ${statement.file_name}`
+                : "Statement"}
+            </h1>
+            <p className="mt-1 text-sm text-zinc-600">
+              Status: {statement?.processing_status ?? "Not found"}
+            </p>
+          </div>
+          {statement ? (
+            <StatementDeleteButton
+              statementId={statement.id}
+              afterDeleteHref="/statements"
+            />
+          ) : null}
+        </div>
       </section>
 
       <SummaryCards

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { StatementDeleteButton } from "@/components/statements/StatementDeleteButton";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function StatementsPage() {
@@ -36,12 +37,18 @@ export default async function StatementsPage() {
                 </p>
                 <p className="text-sm text-zinc-500">{statement.processing_status}</p>
               </div>
-              <Link
-                href={`/statements/${statement.id}`}
-                className="text-sm font-medium text-zinc-700 hover:text-zinc-900"
-              >
-                View
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/statements/${statement.id}`}
+                  className="text-sm font-medium text-zinc-700 hover:text-zinc-900"
+                >
+                  View
+                </Link>
+                <StatementDeleteButton
+                  statementId={statement.id}
+                  className="rounded-lg border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50 disabled:opacity-60"
+                />
+              </div>
             </li>
           ))}
           {statements?.length === 0 ? (
