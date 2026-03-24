@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function StatementUploadForm() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,11 +59,16 @@ export function StatementUploadForm() {
       </div>
 
       <input
+        ref={fileInputRef}
         type="file"
         accept="application/pdf"
         onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-        className="w-full rounded-lg border border-zinc-300 p-2 text-sm"
+        className="hidden"
       />
+
+      <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+        {file ? `Selected file: ${file.name}` : "No file selected"}
+      </div>
 
       {error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -70,13 +76,22 @@ export function StatementUploadForm() {
         </div>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-      >
-        {isSubmitting ? "Processing..." : "Upload and process"}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+        >
+          Upload file
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+        >
+          {isSubmitting ? "Analyzing..." : "Analyze"}
+        </button>
+      </div>
     </form>
   );
 }
