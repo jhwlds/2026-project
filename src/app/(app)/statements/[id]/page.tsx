@@ -1,4 +1,6 @@
+import { CategoryPieChart } from "@/components/dashboard/CategoryPieChart";
 import { StatementDeleteButton } from "@/components/statements/StatementDeleteButton";
+import { TransactionsByCategory } from "@/components/transactions/TransactionsByCategory";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { TransactionsTable } from "@/components/transactions/TransactionsTable";
 import { computeCategoryBreakdown, computeStatementMetrics } from "@/lib/reporting/metrics";
@@ -31,7 +33,21 @@ export default async function StatementDetailPage({
 
   const rows = transactions ?? [];
   const metrics = computeStatementMetrics(rows);
-  const categoryBreakdown = computeCategoryBreakdown(rows).slice(0, 5);
+  const categoryBreakdown = computeCategoryBreakdown(rows);
+  const topCategoryBreakdown = categoryBreakdown.slice(0, 5);
+  const topCategorySpend = topCategoryBreakdown[0]?.total ?? 0;
+  const topCategoryShare =
+    metrics.totalSpent > 0 ? Math.round((topCategorySpend / metrics.totalSpent) * 100) : 0;
+  const positiveTxCount = rows.filter((row) => row.amount > 0).length;
+  const negativeTxCount = rows.length - positiveTxCount;
+  const summaryLines =
+    rows.length === 0
+      ? ["No transactions found for this statement yet."]
+      : [
+          `Total spend is ${formatCurrency(metrics.totalSpent)} across ${positiveTxCount} purchase${positiveTxCount === 1 ? "" : "s"}.`,
+          `Top spending category is ${metrics.topCategory} at ${formatCurrency(topCategorySpend)} (${topCategoryShare}% of total).`,
+          `Largest single transaction is ${formatCurrency(metrics.largestTransaction)}.${negativeTxCount > 0 ? ` There are ${negativeTxCount} refund/credit transaction${negativeTxCount === 1 ? "" : "s"}.` : ""}`,
+        ];
 
   return (
     <main className="space-y-6">
@@ -64,34 +80,20 @@ export default async function StatementDetailPage({
       />
 
       <section className="rounded-2xl border bg-white p-4">
-        <h2 className="text-lg font-semibold text-zinc-900">Monthly summary (mock)</h2>
-        <p className="mt-2 text-sm text-zinc-700">
-          This month you spent most on {metrics.topCategory}. Total spend is{" "}
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(metrics.totalSpent)}
-          . Full AI summary will be connected in the next step.
+        <h2 className="text-lg font-semibold text-zinc-900">Monthly summary</h2>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-700">
+          {summaryLines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+        <p className="mt-3 text-xs text-zinc-500">
+          Mock summary is generated from parsed transaction metrics only.
         </p>
       </section>
 
-      <section className="rounded-2xl border bg-white p-4">
-        <h2 className="text-lg font-semibold text-zinc-900">Top categories</h2>
-        <ul className="mt-2 space-y-2 text-sm text-zinc-700">
-          {categoryBreakdown.map((item) => (
-            <li key={item.category} className="flex justify-between">
-              <span>{item.category}</span>
-              <span>
-                {new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                }).format(item.total)}
-              </span>
-            </li>
-          ))}
-          {categoryBreakdown.length === 0 ? <li>No transactions yet.</li> : null}
-        </ul>
-      </section>
+      <CategoryPieChart items={categoryBreakdown} />
+
+      <TransactionsByCategory rows={rows} />
 
       <section className="space-y-2">
         <h2 className="text-lg font-semibold text-zinc-900">Transactions</h2>
@@ -99,4 +101,11 @@ export default async function StatementDetailPage({
       </section>
     </main>
   );
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
 }

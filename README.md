@@ -14,7 +14,7 @@ Privacy-first web app for uploading one monthly credit card statement PDF (Chase
 - Email magic-link auth via Supabase
 - Single ingestion endpoint: `POST /api/ingest`
 - Chase parser v1 skeleton (text-based PDF extraction, no OCR)
-- Transaction normalization + rule-based categorization
+- Transaction normalization + AI-based categorization
 - Statement list page and statement detail page (summary cards + table)
 - SQL migrations for schema + RLS policies
 
@@ -42,7 +42,7 @@ npm run dev
 - `src/app/api/ingest/route.ts`: single ingestion flow
 - `src/lib/parsing/chaseUsParser.ts`: Chase parser v1 skeleton
 - `src/lib/parsing/normalizeTransactions.ts`: normalization utilities
-- `src/lib/categorization/rules.ts`: rule-based categories
+- `src/lib/categorization/ai.ts`: AI transaction categorization
 - `src/app/(app)/statements/new/page.tsx`: upload page
 - `src/app/(app)/statements/[id]/page.tsx`: statement detail page
 

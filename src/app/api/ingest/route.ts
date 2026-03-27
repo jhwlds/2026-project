@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { applyRuleBasedCategorization } from "@/lib/categorization/rules";
+import { categorizeTransactionsWithAi } from "@/lib/categorization/ai";
 import { ChaseUsParser } from "@/lib/parsing/chaseUsParser";
 import { normalizeTransactions } from "@/lib/parsing/normalizeTransactions";
 import { extractPdfText } from "@/lib/parsing/pdfText";
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const parser = new ChaseUsParser();
     const parsed = parser.parse({ rawText });
     const normalized = normalizeTransactions(parsed.transactions);
-    const categorized = applyRuleBasedCategorization(normalized);
+    const categorized = await categorizeTransactionsWithAi(normalized);
 
     const { data: statement, error: statementError } = await supabase
       .from("statements")
