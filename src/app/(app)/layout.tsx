@@ -21,11 +21,11 @@ export default async function AppLayout({
       <header className="border-b bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
-            <Link href="/statements/new" className="font-semibold text-zinc-900">
+            <Link href="/dashboard" className="font-semibold text-zinc-900">
               Statement Spending Analyzer
             </Link>
-            <Link href="/statements/new" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Upload
+            <Link href="/dashboard" className="text-sm text-zinc-600 hover:text-zinc-900">
+              Dashboard
             </Link>
             <Link href="/statements" className="text-sm text-zinc-600 hover:text-zinc-900">
               Statements

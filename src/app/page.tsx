@@ -12,5 +12,5 @@ export default async function HomePage() {
     redirect("/signin");
   }
 
-  redirect("/statements/new");
+  redirect("/dashboard");
 }

@@ -31,7 +31,11 @@ export class ChaseUsParser extends BaseStatementParser {
 
     const transactions: ParsedTransaction[] = [];
     for (const line of lines) {
-      const parsed = this.parseTransactionLine(line, statementPeriod.year);
+      const parsed = this.parseTransactionLine(
+        line,
+        statementPeriod.year,
+        statementPeriod.month,
+      );
       if (parsed) {
         transactions.push(parsed);
       }
@@ -73,7 +77,11 @@ export class ChaseUsParser extends BaseStatementParser {
     throw new Error("Unable to detect statement month/year from PDF text.");
   }
 
-  private parseTransactionLine(line: string, defaultYear: number): ParsedTransaction | null {
+  private parseTransactionLine(
+    line: string,
+    defaultYear: number,
+    statementMonth: number,
+  ): ParsedTransaction | null {
     // MVP regex for Chase-like row text:
     // "03/21 COSTCO WHSE #1234 123.45"
     // "03/22 AMAZON MKTPLACE PMTS -23.11"
@@ -85,6 +93,7 @@ export class ChaseUsParser extends BaseStatementParser {
     const month = Number(match[1]);
     const day = Number(match[2]);
     const merchantRaw = match[3].trim();
+    const year = month > statementMonth ? defaultYear - 1 : defaultYear;
 
     // Exclude payment/credit rows from spending analytics for MVP.
     if (/^payment\s+thank\s+you-?mobile$/i.test(merchantRaw)) {
@@ -99,7 +108,7 @@ export class ChaseUsParser extends BaseStatementParser {
     }
 
     return {
-      date: toIsoDate(defaultYear, month, day),
+      date: toIsoDate(year, month, day),
       merchantRaw,
       amount,
     };
