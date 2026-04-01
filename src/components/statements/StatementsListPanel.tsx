@@ -4,10 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import type { SupportedBank } from "@/types/domain";
+import { getBankLabel } from "@/lib/parsing/banks";
 import { StatementIngestModal } from "@/components/upload/StatementIngestModal";
 
 type StatementItem = {
   id: string;
+  bank: SupportedBank;
   file_name: string;
   statement_month: number;
   statement_year: number;
@@ -28,7 +31,10 @@ export function StatementsListPanel({ statements }: { statements: StatementItem[
     const selectedSet = new Set(selectedIds);
     return statements
       .filter((statement) => selectedSet.has(statement.id))
-      .map((statement) => `${statement.statement_month}/${statement.statement_year} - ${statement.file_name}`);
+      .map(
+        (statement) =>
+          `${statement.statement_month}/${statement.statement_year} - ${statement.file_name} (${getBankLabel(statement.bank)})`,
+      );
   }, [selectedIds, statements]);
 
   function toggleSelectMode() {
@@ -145,7 +151,9 @@ export function StatementsListPanel({ statements }: { statements: StatementItem[
                     <p className="font-medium text-zinc-900">
                       {statement.statement_month}/{statement.statement_year} - {statement.file_name}
                     </p>
-                    <p className="text-sm text-zinc-500">{statement.processing_status}</p>
+                    <p className="text-sm text-zinc-500">
+                      {getBankLabel(statement.bank)} • {statement.processing_status}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

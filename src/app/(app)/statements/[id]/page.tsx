@@ -3,6 +3,7 @@ import { StatementDeleteButton } from "@/components/statements/StatementDeleteBu
 import { TransactionsByCategory } from "@/components/transactions/TransactionsByCategory";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { TransactionsTable } from "@/components/transactions/TransactionsTable";
+import { getBankLabel } from "@/lib/parsing/banks";
 import { computeCategoryBreakdown, computeStatementMetrics } from "@/lib/reporting/metrics";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -19,7 +20,7 @@ export default async function StatementDetailPage({
 
   const { data: statement } = await supabase
     .from("statements")
-    .select("id,file_name,statement_month,statement_year,processing_status")
+    .select("id,bank,file_name,statement_month,statement_year,processing_status")
     .eq("id", id)
     .eq("user_id", user!.id)
     .single();
@@ -60,7 +61,9 @@ export default async function StatementDetailPage({
                 : "Statement"}
             </h1>
             <p className="mt-1 text-sm text-zinc-600">
-              Status: {statement?.processing_status ?? "Not found"}
+              {statement
+                ? `${getBankLabel(statement.bank)} • ${statement.processing_status}`
+                : "Status: Not found"}
             </p>
           </div>
           {statement ? (

@@ -1,6 +1,6 @@
 # Statement Spending Analyzer (MVP)
 
-Privacy-first web app for uploading one monthly credit card statement PDF (Chase US format), extracting transactions, categorizing spending, and showing a monthly report dashboard.
+Privacy-first web app for uploading monthly statement PDFs from supported banks, extracting transactions, categorizing spending, and showing a monthly report dashboard.
 
 ## Tech Stack
 
@@ -13,7 +13,7 @@ Privacy-first web app for uploading one monthly credit card statement PDF (Chase
 
 - Email magic-link auth via Supabase
 - Single ingestion endpoint: `POST /api/ingest`
-- Chase parser v1 skeleton (text-based PDF extraction, no OCR)
+- Multi-bank ingestion with Chase and UCCU parser support
 - Transaction normalization + AI-based categorization
 - Statement list page and statement detail page (summary cards + table)
 - SQL migrations for schema + RLS policies
@@ -40,7 +40,10 @@ npm run dev
 - `supabase/migrations/0001_init.sql`: core schema
 - `supabase/migrations/0002_rls.sql`: RLS policies
 - `src/app/api/ingest/route.ts`: single ingestion flow
-- `src/lib/parsing/chaseUsParser.ts`: Chase parser v1 skeleton
+- `src/lib/parsing/chaseUsParser.ts`: Chase credit-card parser
+- `src/lib/parsing/uccuParser.ts`: UCCU checking parser
+- `src/lib/parsing/banks.ts`: supported bank labels and ids
+- `src/lib/parsing/parserRegistry.ts`: supported bank registry
 - `src/lib/parsing/normalizeTransactions.ts`: normalization utilities
 - `src/lib/categorization/ai.ts`: AI transaction categorization
 - `src/app/(app)/statements/new/page.tsx`: upload page
@@ -60,7 +63,7 @@ npm run dev
 
 ### Core goals (MVP)
 
-- Upload one Chase-format statement PDF
+- Upload a supported statement PDF and choose the matching bank format
 - Parse transactions and normalize merchant/date/amount
 - Categorize spending with initial rule-based logic
 - Show category totals and transaction-level detail on a dashboard
@@ -133,7 +136,7 @@ flowchart LR
 ## Initial Daily Goals (Now -> End of Class)
 
 - **Day 1**: finalize schema, auth, and PDF upload API contract
-- **Day 2**: complete Chase parser v1 and robust normalization
+- **Day 2**: complete parser coverage and robust normalization
 - **Day 3**: improve categorization rules and handle edge cases
 - **Day 4**: finish dashboard visuals (totals, category chart, transaction table)
 - **Day 5**: polish UX, seed demo data, and run end-to-end test
