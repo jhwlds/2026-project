@@ -6,6 +6,7 @@ export type ProcessingStatus =
   | "failed";
 
 export type CategorizationSource = "rule" | "ai" | "user";
+export type SupportedBank = "chase-us" | "uccu";
 
 export type ParsedTransaction = {
   date: string;
@@ -29,6 +30,7 @@ export type CategorizedTransaction = NormalizedTransaction & {
 
 export type StatementRecord = {
   id: string;
+  bank: SupportedBank;
   file_name: string;
   statement_month: number;
   statement_year: number;

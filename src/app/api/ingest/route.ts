@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { categorizeTransactionsWithAi } from "@/lib/categorization/ai";
-import { ChaseUsParser } from "@/lib/parsing/chaseUsParser";
+import { isSupportedBank } from "@/lib/parsing/banks";
 import { normalizeTransactions } from "@/lib/parsing/normalizeTransactions";
+import { getStatementParser } from "@/lib/parsing/parserRegistry";
 import { extractPdfText } from "@/lib/parsing/pdfText";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -22,7 +23,12 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
+    const bank = formData.get("bank");
     const file = formData.get("file");
+
+    if (typeof bank !== "string" || !isSupportedBank(bank)) {
+      return NextResponse.json({ error: "A supported bank is required." }, { status: 400 });
+    }
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "PDF file is required." }, { status: 400 });
@@ -35,7 +41,7 @@ export async function POST(request: Request) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const rawText = await extractPdfText(fileBuffer);
 
-    const parser = new ChaseUsParser();
+    const parser = getStatementParser(bank);
     const parsed = parser.parse({ rawText });
     const normalized = normalizeTransactions(parsed.transactions);
     const categorized = await categorizeTransactionsWithAi(normalized);
@@ -44,6 +50,7 @@ export async function POST(request: Request) {
       .from("statements")
       .insert({
         user_id: user.id,
+        bank,
         file_name: file.name,
         statement_month: parsed.statementMonth,
         statement_year: parsed.statementYear,

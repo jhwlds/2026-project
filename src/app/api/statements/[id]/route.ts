@@ -22,7 +22,7 @@ export async function GET(
 
   const { data: statement, error: statementError } = await supabase
     .from("statements")
-    .select("id,file_name,statement_month,statement_year,uploaded_at,processing_status")
+    .select("id,bank,file_name,statement_month,statement_year,uploaded_at,processing_status")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();

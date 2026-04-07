@@ -1,4 +1,4 @@
-import type { ParsedTransaction } from "@/types/domain";
+import type { ParsedTransaction, SupportedBank } from "@/types/domain";
 
 export type ParseStatementInput = {
   rawText: string;
@@ -11,6 +11,7 @@ export type ParseStatementResult = {
 };
 
 export abstract class BaseStatementParser {
+  abstract bankId: SupportedBank;
   abstract parserVersion: string;
   abstract parse(input: ParseStatementInput): ParseStatementResult;
 }

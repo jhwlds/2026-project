@@ -22,6 +22,7 @@ const MONTHS: Record<string, number> = {
 };
 
 export class ChaseUsParser extends BaseStatementParser {
+  bankId = "chase-us" as const;
   parserVersion = "chase-us-v1";
 
   parse(input: ParseStatementInput): ParseStatementResult {

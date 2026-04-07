@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
+import type { SupportedBank } from "@/types/domain";
+import { SUPPORTED_BANKS } from "@/lib/parsing/banks";
+
 type UploadStatus = "pending" | "uploading" | "done" | "failed";
 
 type UploadItem = {
@@ -14,6 +17,7 @@ type UploadItem = {
 export function StatementUploadForm() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [bank, setBank] = useState<SupportedBank>("uccu");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +72,7 @@ export function StatementUploadForm() {
         );
 
         const formData = new FormData();
+        formData.append("bank", bank);
         formData.append("file", file);
 
         const response = await fetch("/api/ingest", {
@@ -124,6 +129,25 @@ export function StatementUploadForm() {
           Analyze up to 5 PDFs at once. Each file is saved as a separate statement.
         </p>
       </div>
+
+      <label className="block space-y-1">
+        <span className="text-sm font-medium text-zinc-800">Bank format</span>
+        <select
+          value={bank}
+          onChange={(event) => setBank(event.target.value as SupportedBank)}
+          disabled={isSubmitting}
+          className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900"
+        >
+          {SUPPORTED_BANKS.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-zinc-500">
+          Choose the bank format that matches the PDF before uploading.
+        </p>
+      </label>
 
       <input
         ref={fileInputRef}
