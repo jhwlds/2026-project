@@ -42,3 +42,6 @@ next-env.d.ts
 
 #folder
 samples/
+
+# large video assets (GitHub limit 100MB; use Drive, Releases, or Git LFS)
+*.mov
