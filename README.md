@@ -172,7 +172,7 @@ flowchart LR
   U[User Browser] -->|Upload PDF + View Dashboard| N[Next.js App]
   N -->|Auth + CRUD| S[(Supabase Postgres)]
   N -->|Store/Read parsed records| S
-  N -->|Categorization (OpenAI)| O[OpenAI API]
+  N -->|"Categorization (OpenAI)"| O[OpenAI API]
   N -->|Charts + report UI| U
 ```
 
